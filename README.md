@@ -1,111 +1,48 @@
+# Enhancing Heart Disease Prediction Using Deep Learning with Explainable AI (SHAP)
 
-# ❤️ CardioAI Predictor
+This project compares three binary classification models for heart disease prediction:
 
-**Advanced AI-Powered Heart Disease Risk Assessment**  
-Powered by **OnePersonAI Technologies**
+- Logistic Regression
+- Random Forest
+- Artificial Neural Network built with TensorFlow/Keras
 
----
+The app is designed for final-year project work, portfolio demonstrations, and research-style discussion. It includes preprocessing, model evaluation, ANN regularization, early stopping, and SHAP-based explanations.
 
-## 📌 Overview
+## Project Structure
 
-CardioAI Predictor is an AI-powered web application that helps assess the probability of heart disease risk based on patient medical data.  
-It uses **machine learning models** and **interactive visualizations** to provide insightful predictions, while ensuring **data privacy** and **local processing**.
+- `preprocess.py` handles dataset generation, scaling, optional feature selection, and single-patient preprocessing.
+- `model.py` trains Logistic Regression, Random Forest, and ANN models, saves artifacts, and exposes inference helpers.
+- `evaluate.py` computes Accuracy, Precision, Recall, F1-score, and ROC-AUC.
+- `explain.py` generates SHAP summary and waterfall plots for Random Forest and ANN.
+- `app.py` is the Streamlit frontend.
+- `train_and_save_model.py` is a convenience training entry point.
 
-> ⚠ **Disclaimer:**  
-> This tool is for educational and informational purposes only.  
-> It is **NOT** a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for any medical concerns.
+## Why Preprocessing Matters
 
----
+`StandardScaler` is important because Logistic Regression and ANN models are sensitive to feature magnitude. Scaled features help the optimizer converge faster and make learned weights more stable. Optional `SelectKBest` can reduce noise and produce a cleaner research comparison.
 
-## 🚀 Features
+## Installation
 
-- **🧠 AI-Powered Predictions** – Uses Random Forest ML model trained on clinical datasets.
-- **📊 Risk Visualization Dashboard** – Interactive charts for probability, risk distribution, and confidence level.
-- **🔍 SHAP Explainability** – Understand how each feature impacts predictions.
-- **🛡 Privacy First** – No data storage; all processing happens locally.
-- **📈 Continuous Learning** – Model adapts and improves over time.
+```powershell
+cd "c:\Users\sumeet verma\Desktop\New folder2\Heart-diseaseprediction"
+.\.venv\Scripts\python -m pip install -r requirements.txt
+```
 
----
+## Train the Models
 
-## 📷 Screenshots
+```powershell
+.\.venv\Scripts\python train_and_save_model.py
+```
 
-### 1️⃣ Home & Data Entry
-![Home](assets/screenshot1.png)
+## Run the Streamlit App
 
-### 2️⃣ Detailed Probability Analysis
-![Analysis](assets/screenshot2.png)
+```powershell
+.\.venv\Scripts\python -m streamlit run app.py --server.headless true --browser.gatherUsageStats false
+```
 
-### 3️⃣ About & Technology
-![About](assets/screenshot3.png)
+## Notes
 
----
-
-## 🛠 Tech Stack
-
-- **Frontend:** [Streamlit](https://streamlit.io/)  
-- **Backend:** Python, scikit-learn  
-- **Visualization:** Matplotlib, Plotly  
-- **Explainability:** SHAP  
-- **Model:** Random Forest Classifier
-
----
-
-## 📥 Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/cardioai-predictor.git
-   cd cardioai-predictor
-````
-
-2. **Create and activate a virtual environment**
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # For Linux/Mac
-   venv\Scripts\activate     # For Windows
-   ```
-
-3. **Install dependencies**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Run the app**
-
-   ```bash
-   streamlit run app.py
-   ```
-
----
-
-## 📊 How It Works
-
-1. **Input Patient Data** – Age, gender, chest pain type, vital signs, etc.
-2. **AI Model Prediction** – Model calculates the probability of heart disease.
-3. **Risk Dashboard** – Displays probability charts, distribution, and confidence.
-4. **Explainability** – SHAP values help interpret feature contributions.
-
----
-
-## 📜 License
-
-This project is licensed under the **MIT License**.
-
----
-
-## 📧 Contact
-
-For technical support: **[support@onepersonai.com](mailto:support@onepersonai.com)**
-For emergencies: **Call 911**
-
----
-
-### ✨ Developed by OnePersonAI Technologies
-<img width="1920" height="1080" alt="Screenshot 2025-08-13 012207" src="https://github.com/user-attachments/assets/8c6f4d38-6810-4d82-a9ee-fe03012dacd1" />
-
-
-**Advancing healthcare through artificial inte<img width="1920" height="1080" alt="Screenshot 2025-08-13 012224" src="https://github.com/user-attachments/assets/eb4ba3aa-5aba-4b62-8ae6-a7bb1352055b" />
-lligence**
-<img width="1920" height="1080" alt="Screenshot 2025-08-13 012240" src="https://github.com/user-attachments/assets/5e8e78f7-06d7-49cf-9965-d97e7776a576" />
+- The current repository does not include a raw CSV dataset, so the training pipeline builds a reproducible synthetic clinical-style dataset. This keeps the project runnable end to end.
+- Saved artifacts are written to the `artifacts/` directory.
+- SHAP is available for Random Forest and ANN inside the app.
+- In this repository's current Windows environment, TensorFlow wheels are not available from the configured package index. The ANN training path is ready in code, but the full deep learning workflow should be run inside the Ubuntu Vagrant VM or another Linux environment.
