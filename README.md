@@ -46,3 +46,5 @@ cd "c:\Users\sumeet verma\Desktop\New folder2\Heart-diseaseprediction"
 - Saved artifacts are written to the `artifacts/` directory.
 - SHAP is available for Random Forest and ANN inside the app.
 - In this repository's current Windows environment, TensorFlow wheels are not available from the configured package index. The ANN training path is ready in code, but the full deep learning workflow should be run inside the Ubuntu Vagrant VM or another Linux environment.
+# every thing is ok trying to get all the things 
+checking all the repo are uptodate or not
