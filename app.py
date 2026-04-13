@@ -28,18 +28,27 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+        :root {
+            --page-text: #0f172a;
+            --muted-text: #475569;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --card-border: rgba(15, 23, 42, 0.08);
+            --accent: #1f4e79;
+        }
         .stApp {
             background:
                 radial-gradient(circle at top left, rgba(15, 76, 129, 0.12), transparent 36%),
                 radial-gradient(circle at top right, rgba(203, 67, 53, 0.12), transparent 28%),
                 linear-gradient(180deg, #f5f7fb 0%, #ecf1f7 100%);
+            color: var(--page-text);
         }
         .main-card {
-            background: rgba(255, 255, 255, 0.92);
-            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 22px;
             padding: 1.2rem 1.4rem;
             box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+            color: var(--page-text);
         }
         .hero {
             background: linear-gradient(135deg, #102542 0%, #1f4e79 55%, #cf5c36 100%);
@@ -53,8 +62,79 @@ st.markdown(
             background: white;
             border-radius: 18px;
             padding: 0.9rem 1rem;
-            border: 1px solid rgba(15, 23, 42, 0.08);
+            border: 1px solid var(--card-border);
             box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+        }
+        .metric-box [data-testid="stMetricLabel"],
+        .metric-box [data-testid="stMetricValue"],
+        .metric-box [data-testid="stMetricDelta"],
+        .metric-box .stCaptionContainer {
+            color: var(--page-text);
+        }
+        .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp label, .stApp div, .stApp span {
+            color: inherit;
+        }
+        [data-testid="stSidebar"] {
+            background: rgba(255, 255, 255, 0.98);
+            border-right: 1px solid rgba(15, 23, 42, 0.08);
+        }
+        [data-testid="stSidebar"] * {
+            color: var(--page-text);
+        }
+        [data-testid="stSidebar"] .stMarkdown,
+        [data-testid="stSidebar"] .stCaptionContainer,
+        [data-testid="stSidebar"] .stAlert,
+        [data-testid="stSidebar"] small,
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] span,
+        [data-testid="stSidebar"] div {
+            color: var(--page-text) !important;
+        }
+        [data-testid="stSidebar"] [data-baseweb="select"],
+        [data-testid="stSidebar"] [data-baseweb="input"],
+        [data-testid="stSidebar"] [data-baseweb="textarea"] {
+            background: #ffffff;
+            color: var(--page-text) !important;
+            border-radius: 10px;
+        }
+        [data-testid="stSidebar"] input,
+        [data-testid="stSidebar"] textarea,
+        [data-testid="stSidebar"] select {
+            color: var(--page-text) !important;
+            -webkit-text-fill-color: var(--page-text) !important;
+        }
+        [data-testid="stSidebar"] [data-baseweb="select"] svg,
+        [data-testid="stSidebar"] .stSlider svg {
+            fill: var(--page-text) !important;
+            color: var(--page-text) !important;
+        }
+        [data-testid="stSidebar"] [data-baseweb="tag"] {
+            background: #e2e8f0 !important;
+            color: var(--page-text) !important;
+        }
+        [data-testid="stSidebar"] .stInfo {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+        }
+        [data-testid="stTabs"] button {
+            color: var(--muted-text);
+        }
+        [data-testid="stTabs"] button[aria-selected="true"] {
+            color: var(--accent);
+        }
+        [data-testid="stDataFrame"],
+        [data-testid="stTable"] {
+            background: white;
+            border-radius: 14px;
+        }
+        .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+            color: var(--page-text);
+        }
+        .stSelectbox label,
+        .stSlider label,
+        .stNumberInput label {
+            color: var(--page-text);
         }
     </style>
     """,
