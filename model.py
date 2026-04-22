@@ -143,6 +143,14 @@ def _build_prediction_function(bundle, ann_model):
     return predict_patient
 
 
+def _normalize_runtime_bundle(bundle):
+    """Force estimators into a Windows-safe runtime configuration."""
+    forest_model = bundle.get("models", {}).get("Random Forest")
+    if forest_model is not None and hasattr(forest_model, "n_jobs"):
+        forest_model.n_jobs = 1
+    return bundle
+
+
 def train_and_save_pipeline(project_dir: Optional[Path] = None, force_retrain: bool = False):
     project_dir = Path(project_dir or Path(__file__).resolve().parent)
     paths = _artifact_paths(project_dir)
@@ -163,7 +171,7 @@ def train_and_save_pipeline(project_dir: Optional[Path] = None, force_retrain: b
         min_samples_leaf=2,
         class_weight="balanced",
         random_state=42,
-        n_jobs=-1,
+        n_jobs=1,
     )
     random_forest.fit(dataset.X_train_processed, dataset.y_train)
 
@@ -228,6 +236,7 @@ def load_project_artifacts(project_dir: Optional[Path] = None):
     if not paths["bundle"].exists():
         raise RuntimeError("Project artifacts are missing. Run train_and_save_model.py after installing dependencies.")
     bundle = joblib.load(paths["bundle"])
+    bundle = _normalize_runtime_bundle(bundle)
     comparison_df = pd.read_csv(paths["comparison_csv"]) if paths["comparison_csv"].exists() else bundle["comparison_df"]
     ann_model = None
     if TF_AVAILABLE and paths["ann_model"].exists():
