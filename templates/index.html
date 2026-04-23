@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction with SHAP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <aside class="control-panel">
+            <div class="brand-card">
+                <p class="eyebrow">Clinical AI Console</p>
+                <h1>Heart Disease Prediction</h1>
+                <p class="lede">Live ANN activations, SHAP explanations, and patient-ready reporting from a single prediction workflow.</p>
+            </div>
+
+            <section class="panel-card">
+                <div class="panel-heading">
+                    <h2>Patient Inputs</h2>
+                    <p>Every change re-runs validation, prediction, and the ANN diagram.</p>
+                </div>
+                <form id="patient-form" class="input-grid" novalidate>
+                    {% for field in schema %}
+                    <label class="field-card" for="{{ field.name }}">
+                        <span class="field-label">{{ field.label }}</span>
+                        {% if field.type == "slider_int" %}
+                        <div class="range-wrap">
+                            <input
+                                id="{{ field.name }}"
+                                name="{{ field.name }}"
+                                data-field="{{ field.name }}"
+                                data-type="{{ field.type }}"
+                                type="range"
+                                min="{{ field.min }}"
+                                max="{{ field.max }}"
+                                value="{{ field.default }}"
+                                step="1"
+                            >
+                            <output data-output-for="{{ field.name }}">{{ field.default }}</output>
+                        </div>
+                        {% elif field.type == "slider_float" %}
+                        <div class="range-wrap">
+                            <input
+                                id="{{ field.name }}"
+                                name="{{ field.name }}"
+                                data-field="{{ field.name }}"
+                                data-type="{{ field.type }}"
+                                type="range"
+                                min="{{ field.min }}"
+                                max="{{ field.max }}"
+                                value="{{ field.default }}"
+                                step="{{ field.step }}"
+                            >
+                            <output data-output-for="{{ field.name }}">{{ field.default }}</output>
+                        </div>
+                        {% else %}
+                        <select
+                            id="{{ field.name }}"
+                            name="{{ field.name }}"
+                            data-field="{{ field.name }}"
+                            data-type="{{ field.type }}"
+                        >
+                            {% for option_label, option_value in field.options.items() %}
+                            <option value="{{ option_label }}" {% if loop.index0 == field.default_index %}selected{% endif %}>
+                                {{ option_label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% endif %}
+                        <small class="field-help">{{ field.help }}</small>
+                        <small class="field-error" data-error-for="{{ field.name }}"></small>
+                    </label>
+                    {% endfor %}
+                </form>
+                <div class="action-row">
+                    <label class="select-inline" for="explanation-model-select">
+                        <span>SHAP Model</span>
+                        <select id="explanation-model-select"></select>
+                    </label>
+                    <button id="download-report" class="primary-button" type="button">Download Report</button>
+                    <span id="status-pill" class="status-pill">Waiting for first prediction</span>
+                </div>
+            </section>
+        </aside>
+
+        <main class="dashboard">
+            <section class="hero-strip">
+                <div class="hero-copy">
+                    <p class="eyebrow">Dynamic Inference</p>
+                    <h2>Frontend -> API -> ANN/SHAP -> Report</h2>
+                    <p>The dashboard listens to every patient input change, debounces API calls, and redraws the ANN and SHAP views without a page refresh.</p>
+                </div>
+                <div class="hero-meta">
+                    <div class="hero-chip">
+                        <span class="chip-label">Primary Model</span>
+                        <strong id="primary-model">-</strong>
+                    </div>
+                    <div class="hero-chip">
+                        <span class="chip-label">Explanation Model</span>
+                        <strong id="explanation-model">-</strong>
+                    </div>
+                    <div class="hero-chip">
+                        <span class="chip-label">Updated</span>
+                        <strong id="prediction-timestamp">-</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section class="metric-grid">
+                <article class="metric-card accent">
+                    <span class="metric-label">Heart Disease Risk</span>
+                    <strong id="risk-probability" class="metric-value">-</strong>
+                    <span id="risk-label" class="metric-foot">-</span>
+                </article>
+                <article class="metric-card">
+                    <span class="metric-label">Confidence</span>
+                    <strong id="confidence-score" class="metric-value">-</strong>
+                    <span class="metric-foot">Primary-model certainty</span>
+                </article>
+                <article class="metric-card">
+                    <span class="metric-label">ANN Probability</span>
+                    <strong id="ann-probability" class="metric-value">-</strong>
+                    <span class="metric-foot">Live network output</span>
+                </article>
+                <article class="metric-card">
+                    <span class="metric-label">API Status</span>
+                    <strong id="api-status" class="metric-value">Idle</strong>
+                    <span class="metric-foot">Debounced live prediction</span>
+                </article>
+            </section>
+
+            <section class="content-grid">
+                <article class="glass-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Live ANN Visualization</p>
+                            <h3>Input-to-activation flow</h3>
+                        </div>
+                        <p class="section-copy">Node color and edge intensity change with every API response.</p>
+                    </div>
+                    <div id="ann-chart" class="chart-surface"></div>
+                </article>
+
+                <article class="glass-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Prediction Breakdown</p>
+                            <h3>Model probabilities</h3>
+                        </div>
+                        <p class="section-copy">Comparative output from Logistic Regression, Random Forest, and ANN when available.</p>
+                    </div>
+                    <div id="model-chart" class="chart-surface compact"></div>
+                </article>
+
+                <article class="glass-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">SHAP Explanation</p>
+                            <h3>Feature impact on this patient</h3>
+                        </div>
+                        <p class="section-copy">Positive values push toward higher risk. Negative values reduce risk.</p>
+                    </div>
+                    <div id="shap-chart" class="chart-surface"></div>
+                </article>
+
+                <article class="glass-card">
+                    <div class="section-head">
+                        <div>
+                            <p class="eyebrow">Feature Importance</p>
+                            <h3>Top contributors</h3>
+                        </div>
+                        <p class="section-copy">The table and PDF report are generated from the same validated response payload.</p>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Scaled Value</th>
+                                    <th>SHAP</th>
+                                    <th>Direction</th>
+                                </tr>
+                            </thead>
+                            <tbody id="importance-body"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        window.APP_SCHEMA = {{ schema | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='vendor/plotly.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

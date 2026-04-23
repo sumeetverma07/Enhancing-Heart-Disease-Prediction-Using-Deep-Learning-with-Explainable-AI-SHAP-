@@ -216,7 +216,7 @@ def plot_model_comparison(comparison_df: pd.DataFrame):
     ax.set_xlabel("")
     ax.set_ylabel("Score")
     ax.legend(frameon=False)
-    st.pyplot(fig, clear_figure=True, use_container_width=True)
+    st.pyplot(fig, clear_figure=True, width="stretch")
 
 
 def build_prediction_table(probabilities):
@@ -257,14 +257,14 @@ def main():
         st.write(
             "The pipeline scales features before Logistic Regression and ANN training, and it supports SelectKBest to reduce noise."
         )
-        retrain = st.button("Retrain Full Pipeline", use_container_width=True)
+        retrain = st.button("Retrain Full Pipeline", width="stretch")
         st.markdown("</div>", unsafe_allow_html=True)
 
     with right:
         st.markdown("<div class='main-card'>", unsafe_allow_html=True)
         st.subheader("Patient Form")
         raw_input = render_sidebar()
-        st.dataframe(pd.DataFrame([raw_input]), use_container_width=True)
+        st.dataframe(pd.DataFrame([raw_input]), width="stretch")
         st.markdown("</div>", unsafe_allow_html=True)
 
     if retrain:
@@ -311,7 +311,7 @@ def main():
     with tab1:
         st.markdown("<div class='main-card'>", unsafe_allow_html=True)
         st.subheader("Evaluation Results")
-        st.dataframe(comparison_df, use_container_width=True)
+        st.dataframe(comparison_df, width="stretch")
         plot_model_comparison(comparison_df)
         top_recall = comparison_df.sort_values("Recall", ascending=False).iloc[0]
         st.success(f"Highest recall: {top_recall['Model']} ({top_recall['Recall']:.3f})")
@@ -339,14 +339,14 @@ def main():
         )
         c1, c2 = st.columns(2)
         with c1:
-            st.pyplot(plot_shap_summary(shap_bundle), clear_figure=True, use_container_width=True)
+            st.pyplot(plot_shap_summary(shap_bundle), clear_figure=True, width="stretch")
         with c2:
-            st.pyplot(plot_shap_waterfall(shap_bundle), clear_figure=True, use_container_width=True)
+            st.pyplot(plot_shap_waterfall(shap_bundle), clear_figure=True, width="stretch")
         impact_df = shap_bundle["patient_impacts"].copy()
         impact_df["Direction"] = impact_df["SHAP value"].apply(
             lambda value: "Increases risk" if value > 0 else "Decreases risk"
         )
-        st.dataframe(impact_df, use_container_width=True)
+        st.dataframe(impact_df, width="stretch")
         st.markdown("</div>", unsafe_allow_html=True)
 
     with tab4:

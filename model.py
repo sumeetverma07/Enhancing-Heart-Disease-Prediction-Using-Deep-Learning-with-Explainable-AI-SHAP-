@@ -11,6 +11,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
+from ann_runtime import PortableANNModel
 from evaluate import compare_models, compute_classification_metrics
 from preprocess import FEATURE_COLUMNS, PREPROCESSING_NOTE, prepare_dataset, transform_patient_input
 
@@ -241,6 +242,8 @@ def load_project_artifacts(project_dir: Optional[Path] = None):
     ann_model = None
     if TF_AVAILABLE and paths["ann_model"].exists():
         ann_model = load_model(paths["ann_model"])
+    elif paths["ann_model"].exists():
+        ann_model = PortableANNModel.load(paths["ann_model"])
 
     return {
         "bundle": bundle,
